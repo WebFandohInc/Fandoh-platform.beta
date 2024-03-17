@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  username        String   @unique
+  email           String?  @unique
+  age             Int?
+  bio             String?
+  profilePhotoUrl String?  @map("profile_photo_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+
+  accounts    Account[]
+  sessions    Session[]
+  followers   UserFollower[] @relation(name: "user")
+  following   UserFollower[] @relation(name: "follower")
+  posts       Post[]
+  postRatings PostRating[]
+
+  @@map("users")
+}
+
+model UserFollower {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user       User   @relation(name: "user", fields: [userId], references: [id])
+  userId     String @map("user_id")
+  follower   User   @relation(name: "follower", fields: [followerId], references: [id])
+  followerId String @map("follower_id")
+
+  @@map("user_followers")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refreshToken      String? @map("refresh_token") @db.Text
+  accessToken       String? @map("access_token") @db.Text
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
+  scope             String?
+  idToken           String? @map("id_token") @db.Text
+  sessionState      String? @map("session_state")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  expires      DateTime
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@map("sessions")
+}
+
+model Post {
+  id             String   @id @default(cuid())
+  slug           String
+  title          String
+  description    String   @db.Text
+  viewsCount     Int      @map("views_count")
+  bannerPhotoUrl String   @map("banner_photo_url")
+  content        String   @db.Text
+  isDraft        Boolean
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String @map("author_id")
+
+  ratings  PostRating[]
+  tags     PostTag[]
+  comments PostComment[]
+
+  @@map("posts")
+}
+
+model PostRating {
+  id String @id @default(cuid())
+
+  rater   User   @relation(fields: [raterId], references: [id])
+  raterId String @map("rater_id")
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @map("post_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("post_ratings")
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  title String
+
+  posts PostTag[]
+
+  @@map("tags")
+}
+
+model PostTag {
+  id String @id @default(cuid())
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @map("post_id")
+
+  tag   Tag    @relation(fields: [tagId], references: [id])
+  tagId String @map("tag_id")
+
+  @@map("post_tags")
+}
+
+model PostComment {
+  id      String @id @default(cuid())
+  content String @db.Text
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @map("post_id")
+
+  @@map("post_comments")
+}

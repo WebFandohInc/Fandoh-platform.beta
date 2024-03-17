@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "@rocketseat/eslint-config/react",
+    "plugin:tailwindcss/recommended"
+  ],
+  "plugins": [
+    "simple-import-sort"
+  ],
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "@typescript-eslint/no-unused-vars": "warn"
+  }
+}
