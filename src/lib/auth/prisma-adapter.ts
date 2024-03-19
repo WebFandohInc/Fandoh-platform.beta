@@ -7,15 +7,13 @@ import { prisma } from '../prisma'
 export function PrismaAdapter(): Adapter {
   return {
     async createUser(user) {
-      console.log(user, 'USER')
-
       const usersCount = await prisma.user.count()
 
       const prismaUser = await prisma.user.create({
         data: {
           name: user.name!,
           email: user.email ?? undefined,
-          profilePhotoUrl: user.image ?? null,
+          avatarUrl: user.image ?? null,
           username: `${createUsername(user.name!)}${usersCount}`,
         },
       })
@@ -26,7 +24,7 @@ export function PrismaAdapter(): Adapter {
         username: prismaUser.username,
         email: prismaUser.email ?? '',
         emailVerified: null,
-        profilePhotoUrl: prismaUser.profilePhotoUrl!,
+        avatarUrl: prismaUser.avatarUrl!,
       }
     },
 
@@ -47,7 +45,7 @@ export function PrismaAdapter(): Adapter {
         username: user.username,
         email: user.email!,
         emailVerified: null,
-        profilePhotoUrl: user.profilePhotoUrl!,
+        avatarUrl: user.avatarUrl!,
       }
     },
 
@@ -68,7 +66,7 @@ export function PrismaAdapter(): Adapter {
         username: user.username,
         email: user.email!,
         emailVerified: null,
-        profilePhotoUrl: user.profilePhotoUrl!,
+        avatarUrl: user.avatarUrl!,
       }
     },
 
@@ -97,7 +95,7 @@ export function PrismaAdapter(): Adapter {
         username: user.username,
         email: user.email!,
         emailVerified: null,
-        profilePhotoUrl: user.profilePhotoUrl!,
+        avatarUrl: user.avatarUrl!,
       }
     },
 
@@ -109,7 +107,7 @@ export function PrismaAdapter(): Adapter {
         data: {
           name: user.name!,
           email: user.email,
-          profilePhotoUrl: user.image,
+          avatarUrl: user.image,
         },
       })
 
@@ -119,7 +117,7 @@ export function PrismaAdapter(): Adapter {
         username: prismaUser.username,
         email: prismaUser.email!,
         emailVerified: null,
-        profilePhotoUrl: prismaUser.profilePhotoUrl!,
+        avatarUrl: prismaUser.avatarUrl!,
       }
     },
 
@@ -185,7 +183,7 @@ export function PrismaAdapter(): Adapter {
           username: user.username,
           email: user.email!,
           emailVerified: null,
-          profilePhotoUrl: user.profilePhotoUrl!,
+          avatarUrl: user.avatarUrl!,
         },
       }
     },

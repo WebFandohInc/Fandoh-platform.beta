@@ -1,6 +1,5 @@
 'use server'
-
-import type { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import FacebookProvider from 'next-auth/providers/facebook'
 import GoogleProvider from 'next-auth/providers/google'

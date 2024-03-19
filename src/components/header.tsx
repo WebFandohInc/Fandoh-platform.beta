@@ -67,7 +67,7 @@ export function Header() {
                     .map((word) => word.charAt(0))
                     .join('')}
                 </AvatarFallback>
-                <AvatarImage src={session?.data?.user?.profilePhotoUrl ?? ''} />
+                <AvatarImage src={session?.data?.user?.avatarUrl ?? ''} />
               </Avatar>
               <span className="font-bold text-muted-foreground max-[600px]:hidden">
                 {session.data?.user?.name}

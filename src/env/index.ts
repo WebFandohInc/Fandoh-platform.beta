@@ -7,6 +7,10 @@ const envSchema = z.object({
   FACEBOOK_CLIENT_SECRET: z.string(),
   TWITTER_CLIENT_ID: z.string(),
   TWITTER_CLIENT_SECRET: z.string(),
+  AWS_S3_REGION: z.string(),
+  AWS_S3_ACCESS_KEY: z.string(),
+  AWS_S3_SECRET_KEY: z.string(),
+  AWS_S3_BUCKET_NAME: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)

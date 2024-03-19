@@ -112,7 +112,7 @@ export default function Post() {
 
         <div className="mt-6 flex flex-col gap-3">
           <Textarea
-            className="rounded-2xl border-[2px] border-zinc-300 shadow-[0px_3px_1px_1px] shadow-zinc-300"
+            className="rounded-2xl border-2 border-zinc-300 shadow-[0px_3px_1px_1px] shadow-zinc-300"
             placeholder="Write a comment here"
           />
 

@@ -14,22 +14,25 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(uuid())
-  name            String
-  username        String   @unique
-  email           String?  @unique
-  age             Int?
-  bio             String?
-  profilePhotoUrl String?  @map("profile_photo_url")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @default(now()) @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String
+  username  String   @unique
+  email     String?  @unique
+  age       Int?
+  bio       String?
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
 
-  accounts    Account[]
-  sessions    Session[]
-  followers   UserFollower[] @relation(name: "user")
-  following   UserFollower[] @relation(name: "follower")
-  posts       Post[]
-  postRatings PostRating[]
+  accounts  Account[]
+  sessions  Session[]
+  followers UserFollower[] @relation(name: "user")
+  following UserFollower[] @relation(name: "follower")
+  posts     Post[]
+  ratings   PostRating[]
+
+  avatar   Attachment? @relation(fields: [avatarId], references: [id])
+  avatarId String?     @map("avatar_id")
 
   @@map("users")
 }
@@ -77,26 +80,52 @@ model Session {
   @@map("sessions")
 }
 
-model Post {
-  id             String   @id @default(cuid())
-  slug           String
-  title          String
-  description    String   @db.Text
-  viewsCount     Int      @map("views_count")
-  bannerPhotoUrl String   @map("banner_photo_url")
-  content        String   @db.Text
-  isDraft        Boolean
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
+model Attachment {
+  id   String @id @default(cuid())
+  name String
 
-  author   User   @relation(fields: [authorId], references: [id])
+  users             User[]
+  banners           Post[]
+  postContentImages PostContentImages[]
+
+  @@map("attachments")
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  slug        String
+  title       String
+  description String   @db.Text
+  viewsCount  Int      @map("views_count")
+  content     String   @db.Text
+  isDraft     Boolean
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  banner   Attachment @relation(fields: [bannerId], references: [id])
+  bannerId String
+
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId String @map("author_id")
 
-  ratings  PostRating[]
-  tags     PostTag[]
-  comments PostComment[]
+  ratings       PostRating[]
+  tags          PostTag[]
+  comments      PostComment[]
+  contentImages PostContentImages[]
 
   @@map("posts")
+}
+
+model PostContentImages {
+  id String @id @default(cuid())
+
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String @map("post_id")
+
+  image   Attachment @relation(fields: [imageId], references: [id])
+  imageId String     @map("image_id")
+
+  @@map("post_content_images")
 }
 
 model PostRating {

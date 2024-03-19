@@ -1,7 +1,9 @@
 'use client'
 
+import { Attachment } from '@prisma/client'
 import { Camera } from 'lucide-react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { ChangeEvent } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -21,14 +23,59 @@ interface EditProfileSchema {
   bio: string
 }
 
-export function EditProfile() {
+interface EditProfileProps {
+  user: {
+    id: string
+    name: string
+    username: string
+    bio?: string | null
+    avatarUrl?: string | null
+  }
+}
+
+export function EditProfile({ user }: EditProfileProps) {
   const { register } = useForm<EditProfileSchema>({
     values: {
-      name: 'Jhon Doe',
-      username: 'jhondoe',
-      bio: 'Descrição',
+      name: user?.name,
+      username: user?.username,
+      bio: user?.bio ?? '',
     },
   })
+
+  async function handleUploadFile(event: ChangeEvent<HTMLInputElement>) {
+    if (!event.target.files?.length) {
+      return
+    }
+
+    const file = event.target.files[0]
+
+    const formData = new FormData()
+
+    formData.append('file', file)
+
+    const attachmentResponse = await fetch(
+      `http://localhost:3000/api/attachments?name=${file.name}`,
+      {
+        body: formData,
+        method: 'POST',
+      },
+    )
+
+    const attachmentResponseData: { attachment: Attachment } =
+      await attachmentResponse.json()
+
+    const body = {
+      avatarId: attachmentResponseData.attachment.id,
+    }
+
+    await fetch(`http://localhost:3000/api/users/avatar/${user.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+  }
 
   return (
     <DialogContent className="text-zinc-500">
@@ -41,7 +88,7 @@ export function EditProfile() {
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
           <Avatar className="size-32">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            {user.avatarUrl && <AvatarImage src={user.avatarUrl} />}
             <AvatarFallback className="text-5xl font-extrabold">
               JD
             </AvatarFallback>
@@ -54,9 +101,14 @@ export function EditProfile() {
             <Camera className="size-5" />
             Change photo
           </Label>
-          <Input className="hidden" id="photo" name="photo" type="file" />
+          <Input
+            onChange={handleUploadFile}
+            className="hidden"
+            id="photo"
+            name="photo"
+            type="file"
+          />
         </div>
-
         <Label className="mt-6 flex flex-col gap-2">
           <span className="font-bold">Name</span>
           <Input

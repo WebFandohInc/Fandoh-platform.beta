@@ -6,7 +6,7 @@ CREATE TABLE "users" (
     "email" TEXT,
     "age" INTEGER,
     "bio" TEXT,
-    "profile_photo_url" TEXT,
+    "avatar_url" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
